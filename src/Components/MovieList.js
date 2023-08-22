@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import "./MovieList.css";
 import MovieCard from "./MovieCard";
-import { PAGE_SIZE, allMovies_apiUrl } from "../Data/constants";
+import {
+  PAGE_SIZE,
+  allMovies_apiUrl,
+  BASE_URL_SEARCH,
+  API_KEY,
+} from "../Data/constants";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
@@ -9,14 +14,14 @@ const MovieList = () => {
   const [search, setSearch] = useState("");
   const [movies, setMovies] = useState([]);
   const [pageNumber, setPageNumber] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const search_apiUrl = `${BASE_URL_SEARCH}?api_key=${API_KEY}&query=`;
   let totalMovies = 0;
   let totalPages = 0;
-  let [loading, setLoading] = useState(false);
-  // let pageNumberArray = [];
 
   useEffect(() => {
     getAllMovies();
-  }, []);
+  }, [pageNumber]);
 
   const getAllMovies = () => {
     setLoading(true);
@@ -30,7 +35,6 @@ const MovieList = () => {
       .then((data) => {
         totalMovies = data.length;
         totalPages = Math.round(totalMovies / PAGE_SIZE);
-        console.log("totalMovies",totalMovies,"totalPages",totalPages)
         const currentPageMovies = data.slice(
           pageNumber * PAGE_SIZE,
           pageNumber * PAGE_SIZE + PAGE_SIZE
@@ -40,36 +44,58 @@ const MovieList = () => {
       })
       .catch((error) => {
         console.log("Error fetching data", error);
-        removeLoader()
+        removeLoader();
       });
   };
 
   const removeLoader = () => {
-    setTimeout(() => { setLoading(false) }, 0)
-  }
+    setTimeout(() => {
+      setLoading(false);
+    }, 0);
+  };
 
   const pageNumberPrev = () => {
     setPageNumber(pageNumber - 1);
     getAllMovies();
-  }
+  };
 
   const pageNumberNext = () => {
     setPageNumber(pageNumber + 1);
     getAllMovies();
+  };
+
+  const searchCall = () => {
+    if (!search) { // to handle empty search
+      getAllMovies();
+      return;
+    }
+    const searchvalue = search.replace(' ', '+')
+    const newURL = search_apiUrl + searchvalue;
+    fetch(newURL)
+    .then((response)=> {
+      if (!response.ok) throw new Error("Network response is not ok");
+      return response.json();
+    })
+    .then((data)=> {
+      setMovies(data.results)
+    })
   }
- 
+
   const handleSearch = (e) => {
-    setSearch(e.target.value);
+    if(e.charCode === 32 || e.charCode === 13){
+       searchCall();
+    }
+    // setSearch(e.target.value);
   };
 
   return (
     <div>
-      {
-        loading === true && (<div className="loading-circle-container">
+      {loading === true && (
+        <div className="loading-circle-container">
           <img src="loading-load.gif" className="loading-image-gif"></img>
-        </div>)
-      }
-      
+        </div>
+      )}
+
       <div className="form header-row">
         <i className="fa fa-search"></i>
         <input
@@ -77,20 +103,23 @@ const MovieList = () => {
           className="form-control form-input"
           placeholder="Search anything..."
           value={search}
-          onChange={handleSearch}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyPress={handleSearch}
         />
-        { pageNumber > 0 && (
-          <button className="arrow-button-left" onClick={pageNumberPrev}> <ArrowBackIcon /></button>
+        {pageNumber > 0 && (
+          <button className="arrow-button-left" onClick={pageNumberPrev}>
+            {" "}
+            <ArrowBackIcon />
+          </button>
         )}
-        
-     {pageNumber + 1} 
-        <button className="arrow-button-right" onClick={pageNumberNext}><ArrowForwardIcon /></button>
+
+        <div className="page-number">{pageNumber + 1}</div>
+        <button className="arrow-button-right" onClick={pageNumberNext}>
+          <ArrowForwardIcon />
+        </button>
       </div>
       <div className="main-container">
         {movies
-          .filter((movie) =>
-            movie.original_title.toLowerCase().includes(search.toLowerCase())
-          )
           .map((movie) => (
             <MovieCard movie={movie} />
           ))}
