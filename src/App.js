@@ -1,23 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import React from "react";
+import MovieList from "./Components/MovieList";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route
+ } from "react-router-dom";
+import MovieDetail from "./Components/MovieDetail";
+import HomeIcon from "@mui/icons-material/Home";
+
 
 function App() {
+
+  const navigateToMovieList = () => {
+    document.location =
+      document.location.origin;
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <button className="home-button" onClick={navigateToMovieList}>  <HomeIcon /></button>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MovieList />} />
+        <Route path="movieDetail" element={<MovieDetail />} />
+      </Routes>
+    </Router>
     </div>
   );
 }
