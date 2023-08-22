@@ -1,3 +1,13 @@
+# Proficiency
+1. Added Search only when the Enter key is pressed.
+2. Resuable component structure
+3. Pagination is available
+4. Loading circle until the data is loaded for the given page number
+
+# Possible Improvements
+1. As we have a video option available, we can show the trialer on mouseover, like Netflix.
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
@@ -68,3 +78,6 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+# Challange Feedback
+There could be a swagger kind of link where we can see all apis at one place which can also be helpful to test.
